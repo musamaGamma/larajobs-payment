@@ -3,15 +3,15 @@ import PaymentPageClient from './components/PaymentPageClient'
 import { getServerNonce } from './utils/serverNonce'
 
 interface PaymentPageProps {
-  searchParams: {
+  searchParams: Promise<{
     checkoutId?: string
     brand?: string
     integrity?: string
-  }
+  }>
 }
 
 export default async function PaymentPage({ searchParams }: PaymentPageProps) {
-  const { checkoutId, brand, integrity } = searchParams
+  const { checkoutId, brand, integrity } = await searchParams
 
   // Get nonce from server-side headers
   const nonce = await getServerNonce()
