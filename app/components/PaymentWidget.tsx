@@ -162,7 +162,7 @@ export default function PaymentWidget({ checkoutId, brand, integrity, nonce }: P
       const scripts = document.querySelectorAll('script[src*="jquery"], script[src*="oppwa"]')
       scripts.forEach(script => script.remove())
     }
-  }, [checkoutId, integrity])
+  }, [checkoutId, integrity, currentNonce])
 
   if (scriptError) {
     return (
@@ -350,6 +350,17 @@ export default function PaymentWidget({ checkoutId, brand, integrity, nonce }: P
 // Add global types for HyperPay
 declare global {
   interface Window {
-    wpwl: any
+    wpwl: {
+      appendTo: (selector: string) => void
+      Options: {
+        locale: string
+        paymentTarget: string
+        onReady: () => void
+        onError: (error: unknown) => void
+        onDetectBrand: (brands: string[]) => void
+        onBeforeSubmit: () => void
+        onResponse: (response: unknown) => void
+      }
+    }
   }
 }

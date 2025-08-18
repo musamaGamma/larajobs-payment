@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 export default function CSPTestPage() {
   const [cspHeaders, setCspHeaders] = useState<string>('')
-  const [testResults, setTestResults] = useState<any>({})
+  const [testResults, setTestResults] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     // Test CSP headers
@@ -15,14 +15,14 @@ export default function CSPTestPage() {
         setCspHeaders(cspHeader || 'No CSP header found')
         
         // Test HyperPay domains
-        const tests = {
-          'HyperPay Script Source': cspHeader?.includes('https://eu-test.oppwa.com'),
-          'jQuery Script Source': cspHeader?.includes('https://code.jquery.com'),
-          'Nonce Support': cspHeader?.includes('nonce-'),
-          'Unsafe Eval Support': cspHeader?.includes('unsafe-eval'),
-          'Frame Source': cspHeader?.includes('frame-src'),
-          'Form Action': cspHeader?.includes('form-action'),
-          'Object Source': cspHeader?.includes("object-src 'none'"),
+        const tests: Record<string, boolean> = {
+          'HyperPay Script Source': !!cspHeader?.includes('https://eu-test.oppwa.com'),
+          'jQuery Script Source': !!cspHeader?.includes('https://code.jquery.com'),
+          'Nonce Support': !!cspHeader?.includes('nonce-'),
+          'Unsafe Eval Support': !!cspHeader?.includes('unsafe-eval'),
+          'Frame Source': !!cspHeader?.includes('frame-src'),
+          'Form Action': !!cspHeader?.includes('form-action'),
+          'Object Source': !!cspHeader?.includes("object-src 'none'"),
         }
         
         setTestResults(tests)
