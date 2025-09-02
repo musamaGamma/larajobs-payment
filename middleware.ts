@@ -18,14 +18,16 @@ export function middleware(request: NextRequest) {
     
     const cspDirectives = [
       "default-src 'self'",
-      `script-src 'self' https://eu-test.oppwa.com https://code.jquery.com 'unsafe-eval' 'nonce-${nonce}'`,
-      "style-src 'self' https://eu-test.oppwa.com 'unsafe-inline'",
-      "frame-src 'self' https://eu-test.oppwa.com",
-      "connect-src 'self' https://eu-test.oppwa.com",
-      "img-src 'self' https://eu-test.oppwa.com",
+      `script-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com https://code.jquery.com https://p11.techlab-cdn.com 'unsafe-eval' 'nonce-${nonce}'`,
+      `script-src-attr 'self' https://eu-test.oppwa.com https://gw20.oppwa.com 'unsafe-hashes' 'sha256-47mKTaMaEn1L3m5DAz9muidMqw636xxw7EFAK/YnPdg='`,
+      "style-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com 'unsafe-inline'",
+      "frame-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com",
+      "connect-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com https://p11.techlab-cdn.com wss://*",
+      "worker-src 'self' blob: https://eu-test.oppwa.com",
+      "img-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com https://p11.techlab-cdn.com data:",
       "object-src 'none'",
       "base-uri 'self'",
-      "form-action 'self' https://eu-test.oppwa.com",
+      "form-action 'self' https://eu-test.oppwa.com https://gw20.oppwa.com",
       "frame-ancestors 'self'"
     ].join('; ')
 

@@ -16,10 +16,16 @@ export default function CSPTestPage() {
         
         // Test HyperPay domains
         const tests: Record<string, boolean> = {
-          'HyperPay Script Source': !!cspHeader?.includes('https://eu-test.oppwa.com'),
+          'HyperPay Script Source (eu-test)': !!cspHeader?.includes('https://eu-test.oppwa.com'),
+          'HyperPay Script Source (gw20)': !!cspHeader?.includes('https://gw20.oppwa.com'),
+          'HyperPay Analytics (techlab)': !!cspHeader?.includes('https://p11.techlab-cdn.com'),
           'jQuery Script Source': !!cspHeader?.includes('https://code.jquery.com'),
           'Nonce Support': !!cspHeader?.includes('nonce-'),
           'Unsafe Eval Support': !!cspHeader?.includes('unsafe-eval'),
+          'Script Source Attr': !!cspHeader?.includes('script-src-attr'),
+          'Unsafe Hashes Support': !!cspHeader?.includes('unsafe-hashes'),
+          'Worker Source': !!cspHeader?.includes('worker-src'),
+          'WebSocket Support': !!cspHeader?.includes('wss://*'),
           'Frame Source': !!cspHeader?.includes('frame-src'),
           'Form Action': !!cspHeader?.includes('form-action'),
           'Object Source': !!cspHeader?.includes("object-src 'none'"),

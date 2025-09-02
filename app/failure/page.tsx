@@ -5,11 +5,12 @@ interface FailurePageProps {
   searchParams: Promise<{
     errorCode?: string
     errorMessage?: string
+    checkoutId?: string
   }>
 }
 
 export default async function FailurePage({ searchParams }: FailurePageProps) {
-  const { errorCode, errorMessage } = await searchParams
+  const { errorCode, errorMessage, checkoutId } = await searchParams
 
   return (
     <Suspense fallback={
@@ -39,6 +40,7 @@ export default async function FailurePage({ searchParams }: FailurePageProps) {
       <FailurePageClient 
         errorCode={errorCode}
         errorMessage={errorMessage}
+        checkoutId={checkoutId}
       />
     </Suspense>
   )

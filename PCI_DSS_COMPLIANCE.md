@@ -53,23 +53,29 @@ response.headers.set('X-CSP-Nonce', nonce)
 
 const cspDirectives = [
   "default-src 'self'",
-  `script-src 'self' https://eu-test.oppwa.com https://code.jquery.com 'unsafe-eval' 'nonce-${nonce}'`,
-  "style-src 'self' https://eu-test.oppwa.com 'unsafe-inline'",
-  "frame-src 'self' https://eu-test.oppwa.com",
-  "connect-src 'self' https://eu-test.oppwa.com",
-  "img-src 'self' https://eu-test.oppwa.com",
+  `script-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com https://code.jquery.com https://p11.techlab-cdn.com 'unsafe-eval' 'nonce-${nonce}'`,
+  `script-src-attr 'self' https://eu-test.oppwa.com https://gw20.oppwa.com 'unsafe-hashes' 'sha256-47mKTaMaEn1L3m5DAz9muidMqw636xxw7EFAK/YnPdg='`,
+  "style-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com 'unsafe-inline'",
+  "frame-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com",
+  "connect-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com https://p11.techlab-cdn.com wss://*",
+  "worker-src 'self' blob: https://eu-test.oppwa.com",
+  "img-src 'self' https://eu-test.oppwa.com https://gw20.oppwa.com https://p11.techlab-cdn.com data:",
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self' https://eu-test.oppwa.com",
+  "form-action 'self' https://eu-test.oppwa.com https://gw20.oppwa.com",
   "frame-ancestors 'self'"
 ].join('; ')
 ```
 
 **What it does:**
-- Restricts script execution to trusted sources only
+- Restricts script execution to trusted sources only (eu-test.oppwa.com, gw20.oppwa.com, p11.techlab-cdn.com)
 - Uses nonce-based validation for inline scripts
 - Prevents XSS attacks and script injection
 - Allows HyperPay widget to function properly with `unsafe-eval`
+- Includes `script-src-attr` directive for inline event handlers with `unsafe-hashes`
+- Supports multiple HyperPay gateway domains for redundancy
+- Allows worker scripts for HyperPay internal functionality with `worker-src`
+- Permits HyperPay analytics/tracking domains (techlab-cdn.com) for payment monitoring
 
 ### 4. Next.js Nonce Integration
 
@@ -170,12 +176,14 @@ NEXT_PUBLIC_API_URL=https://api.yourdomain.com
 **File:** `payment-app/middleware.ts`
 ```typescript
 // Change from test to production URLs
-"script-src 'self' https://eu-prod.oppwa.com https://code.jquery.com 'unsafe-eval' 'unsafe-inline'"
-"style-src 'self' https://eu-prod.oppwa.com 'unsafe-inline'"
-"frame-src 'self' https://eu-prod.oppwa.com"
-"connect-src 'self' https://eu-prod.oppwa.com"
-"img-src 'self' https://eu-prod.oppwa.com"
-"form-action 'self' https://eu-prod.oppwa.com"
+"script-src 'self' https://eu-prod.oppwa.com https://gw20.oppwa.com https://code.jquery.com https://p11.techlab-cdn.com 'unsafe-eval' 'nonce-${nonce}'"
+"script-src-attr 'self' https://eu-prod.oppwa.com https://gw20.oppwa.com 'unsafe-hashes'"
+"style-src 'self' https://eu-prod.oppwa.com https://gw20.oppwa.com 'unsafe-inline'"
+"frame-src 'self' https://eu-prod.oppwa.com https://gw20.oppwa.com"
+"connect-src 'self' https://eu-prod.oppwa.com https://gw20.oppwa.com https://p11.techlab-cdn.com wss://*"
+"worker-src 'self' blob: https://eu-prod.oppwa.com"
+"img-src 'self' https://eu-prod.oppwa.com https://gw20.oppwa.com https://p11.techlab-cdn.com data:"
+"form-action 'self' https://eu-prod.oppwa.com https://gw20.oppwa.com"
 ```
 
 **File:** `payment-app/app/components/PaymentWidget.tsx`
@@ -247,6 +255,25 @@ script.src = `https://eu-prod.oppwa.com/v1/paymentWidgets.js?checkoutId=${checko
 4. **"CSP header not found"**
    - Solution: Verify middleware is running on payment routes
    - Check that CSP headers are being set correctly
+
+5. **"Script blocked from gw20.oppwa.com"**
+   - Solution: Ensure both `https://eu-test.oppwa.com` and `https://gw20.oppwa.com` are in script-src directive
+   - HyperPay uses multiple gateway domains for redundancy
+
+6. **"Event handler blocked by script-src-attr"**
+   - Solution: Add `script-src-attr` directive with 'unsafe-hashes' and specific hash
+   - Consider using `'sha256-47mKTaMaEn1L3m5DAz9muidMqw636xxw7EFAK/YnPdg='` for jQuery inline handlers
+
+7. **"Script blocked from techlab-cdn.com"**
+   - Solution: Add `https://p11.techlab-cdn.com` to both script-src and connect-src directives
+   - This domain is used by HyperPay for analytics and fraud detection
+
+8. **"Worker script blocked by CSP"**
+   - Solution: Add `worker-src 'self' blob: https://eu-test.oppwa.com` directive
+   - HyperPay uses web workers for internal processing
+
+9. **"WebSocket connection blocked"**
+   - Solution: Add `wss://*` to connect-src directive for real-time communication
 
 ### Debug Commands
 

@@ -13,6 +13,7 @@ interface PaymentPageProps {
 export default async function PaymentPage({ searchParams }: PaymentPageProps) {
   const { checkoutId, brand, integrity } = await searchParams
 
+  console.log({ checkoutId, brand, integrity })
   // Get nonce from server-side headers
   const nonce = await getServerNonce()
 
